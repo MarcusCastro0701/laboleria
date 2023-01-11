@@ -5,7 +5,6 @@ import { paramsVerification } from "../middlewares/paramsVerificationMiddleware.
 import { queryVerification } from "../middlewares/queryVerificationMiddleware.js";
 
 
-
 const router = Router()
 
 router.post("/cakes", bodyVerification, postCake)

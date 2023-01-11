@@ -8,7 +8,7 @@ dayjs.extend(customParseFormat);
 export async function postOrder(req, res){
 
     let today = dayjs().locale('pt-br').format('YYYY-MM-DD');
-    const { clientId, cakeId, quantity } = req.body;
+    const { clientId, cakeId, quantity, totalPrice } = req.body;
 
     const verificaCake = await connectionDB.query('SELECT * FROM cakes WHERE id=$1;', [cakeId]);
     const verificaClient = await connectionDB.query('SELECT * FROM clients WHERE id=$1;', [clientId]);
@@ -33,7 +33,7 @@ export async function postOrder(req, res){
     }
 
     try {
-        await connectionDB.query('INSERT INTO orders ("clientId", "cakeId", quantity, "createdAt") VALUES ($1, $2, $3, $4);', [clientId, cakeId, quantity, today]);
+        await connectionDB.query('INSERT INTO orders ("clientId", "cakeId", quantity, "totalPrice", "createdAt") VALUES ($1, $2, $3, $4, $5);', [clientId, cakeId, quantity, totalPrice, today]);
         console.log("ordem inserida");
         res.sendStatus(201);
         return
@@ -67,6 +67,9 @@ export async function getOrders(req, res){
                 
                 const client = await connectionDB.query('SELECT * FROM clients WHERE id=$1;', [ordersByDate.rows[c].clientId]);
                 const cake = await connectionDB.query('SELECT * FROM cakes WHERE id=$1;', [ordersByDate.rows[c].cakeId]);
+                const number = parseFloat(ordersByDate.rows[c].totalPrice);
+                const quantityNumber = parseFloat(ordersByDate.rows[c].quantity);
+
 
                 const newBody = {
                     client: {
@@ -84,7 +87,8 @@ export async function getOrders(req, res){
                     },
                     orderId: ordersByDate.rows[c].id,
                     createdAt: ordersByDate.rows[c].createdAt,
-                    quantity: ordersByDate.rows[c].quantity
+                    quantity: quantityNumber,
+                    totalPrice: number
                 }
 
                 arrOrders.push(newBody);
@@ -114,6 +118,9 @@ export async function getOrders(req, res){
 
             const client = await connectionDB.query('SELECT * FROM clients WHERE id=$1;', [orders.rows[c].clientId]);
             const cake = await connectionDB.query('SELECT * FROM cakes WHERE id=$1;', [orders.rows[c].cakeId]);
+            const number = parseFloat(orders.rows[c].totalPrice);
+            const quantityNumber = parseFloat(orders.rows[c].quantity);
+            
 
             const newBody = {
                 client: {
@@ -131,11 +138,12 @@ export async function getOrders(req, res){
                 },
                 orderId: orders.rows[c].id,
                 createdAt: orders.rows[c].createdAt,
-                quantity: orders.rows[c].quantity
+                quantity: quantityNumber,
+                totalPrice: number
             }
 
             arrOrders.push(newBody);
-            console.log(arrOrders, "arrOrders", newBody, "newBody")
+            console.log(typeof orders.rows[c].totalPrice)
 
             if(c === (orders.rows.length -1)){
                 console.log("getOrders finalizado");
@@ -179,6 +187,8 @@ export async function getOrdersById(req, res){
 
             const client = await connectionDB.query('SELECT * FROM clients WHERE id=$1;', [orders.rows[c].clientId]);
             const cake = await connectionDB.query('SELECT * FROM cakes WHERE id=$1;', [orders.rows[c].cakeId]);
+            const priceNumber = parseFloat(orders.rows[c].totalPrice);
+            const quantityNumber = parseFloat(orders.rows[c].quantity);
 
             const newBody = {
                 client: {
@@ -196,11 +206,12 @@ export async function getOrdersById(req, res){
                 },
                 orderId: orders.rows[c].id,
                 createdAt: orders.rows[c].createdAt,
-                quantity: orders.rows[c].quantity
+                quantity: quantityNumber,
+                totalPrice: priceNumber
             }
 
             arrOrders.push(newBody);
-            console.log(arrOrders, "arrOrders", newBody, "newBody")
+            console.log(typeof orders.rows[c].totalPrice)
 
             if(c === (orders.rows.length -1)){
                 console.log("getOrders finalizado");
@@ -241,6 +252,7 @@ export async function getClientAndOrders(req, res){
             JOIN cakes ON orders."cakeId"=cakes.id
             WHERE orders."clientId" = $1;
         `, [id])
+        console.log(join.rows)
         res.send(join.rows).status(200);
         return;
 
@@ -251,3 +263,5 @@ export async function getClientAndOrders(req, res){
     }
 
 }
+
+

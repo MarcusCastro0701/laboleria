@@ -8,7 +8,7 @@ const clientSchema = joi.object({
 });
 
 export async function postClient(req, res) {
-
+    //criei o adress com apenas um d ao invés de address...
     const client = req.body;
 
     const { error } = clientSchema.validate(client, { abortEarly: false });
