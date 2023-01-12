@@ -94,6 +94,7 @@ CREATE TABLE public.orders (
     "clientId" integer NOT NULL,
     "cakeId" integer NOT NULL,
     quantity numeric NOT NULL,
+    "totalPrice" numeric NOT NULL,
     "createdAt" date NOT NULL
 );
 
@@ -144,6 +145,8 @@ ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.order
 --
 
 INSERT INTO public.cakes VALUES (1, 'bolo de ninho', 15, 'https://encurtador.com.br/iDIX0', '2022-05-05');
+INSERT INTO public.cakes VALUES (2, 'Bolo de pote', 19, 'https://encurtador.com.br/iDIX0', 'Bolo de chocolate com recheio de leite ninho');
+INSERT INTO public.cakes VALUES (3, 'Bolo de morango', 13, 'https://encurtador.com.br/iDIX0', 'Bolo de morango com recheio de leite ninho');
 
 
 --
@@ -151,35 +154,37 @@ INSERT INTO public.cakes VALUES (1, 'bolo de ninho', 15, 'https://encurtador.com
 --
 
 INSERT INTO public.clients VALUES (1, 'Marcus', 'condomínio de lavras', '35997520701');
+INSERT INTO public.clients VALUES (2, 'Penas', 'Rua tal', '2199999999');
+INSERT INTO public.clients VALUES (3, 'FRANGO', 'Bairro', '2199999956');
 
 
 --
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.orders VALUES (1, 1, 1, 2, '2023-01-11');
-INSERT INTO public.orders VALUES (2, 1, 1, 5, '2023-01-11');
+INSERT INTO public.orders VALUES (3, 1, 2, 2, 38, '2023-01-11');
+INSERT INTO public.orders VALUES (4, 1, 1, 2, 30, '2023-01-11');
 
 
 --
 -- Name: cakes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.cakes_id_seq', 1, true);
+SELECT pg_catalog.setval('public.cakes_id_seq', 3, true);
 
 
 --
 -- Name: clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.clients_id_seq', 1, true);
+SELECT pg_catalog.setval('public.clients_id_seq', 3, true);
 
 
 --
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 4, true);
 
 
 --
@@ -204,6 +209,22 @@ ALTER TABLE ONLY public.clients
 
 ALTER TABLE ONLY public.orders
     ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders orders_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_fk0 FOREIGN KEY ("cakeId") REFERENCES public.cakes(id);
+
+
+--
+-- Name: orders orders_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_fk1 FOREIGN KEY ("clientId") REFERENCES public.clients(id);
 
 
 --
